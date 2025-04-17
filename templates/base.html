@@ -5,25 +5,27 @@
     <link href="/static/css/custom.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="container">
-      <header
-        class="d-flex flex-wrap px-md-3 py-3 mt-md-4 mb-4 shadow p-sticky rounded">
-        <a
-          href="/template/index.html/"
-          class="d-flex align-items-center mb-3 mb-md-0 link-body-emphasis text-decoration-none rounded-pill py-lg-2 px-4 shadow-sm me-auto bg-primary"
-        >
-          <span class="fs-5">Eddie's ALP Porfolio</span>
-        </a>
-        <ul class="nav nav-pills py-lg-2 px-4 rounded-pill shadow-sm bg-body" id="navbar_items">
-          <li class="nav-item">
-            <a href="/template/index.html/" class="nav-link">Home</a>
-          </li>
-          <li class="nav-item">
-            <a href="/template/artifacts.html/" class="nav-link">Artifacts</a>
-          </li>
-        </ul>
-      </header>
-    </div>
+    <header
+      class="d-flex px-5 py-1 mt-md-3 mb-4 shadow-sm position-sticky rounded"
+    >
+      <a
+        href="/"
+        class="d-flex align-items-center link-body-emphasis text-decoration-none rounded-pill p-2 bg-primary text-light me-4"
+      >
+        <span class="fs-5">Eddie's ALP Porfolio</span>
+      </a>
+      <ul
+        class="nav nav-pills py-lg-2 px-4 rounded-pill shadow-sm bg-body"
+        id="navbar_items"
+      >
+        <li class="nav-item">
+          <a href="/" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item">
+          <a href="/artifacts/" class="nav-link">Artifacts</a>
+        </li>
+      </ul>
+    </header>
     {% block body %}{% endblock %}
     <script src="/static/base.js/"></script>
     <script src="/static/vendor/bootatrap-5.5.5/dist/js/bootstrap.min.js/"></script>

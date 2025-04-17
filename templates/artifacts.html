@@ -6,11 +6,16 @@
   <div class="card">
     <div class="card-header flex-row flex-wrap gap-auto">
       {{ artifact.title }}
-      {% for badge in artifact.badges|from_json %}
+      {% for badge in artifact.badges_list %}
         <span class="badge border fs-6"{{ badge }}></span>
       {% endfor %}
     </div>
     <div class="card-body">{{ artifact.description }}</div>
+    {% if current_user.is_authenticated %}
+      <div class="card-footer">
+        <form method="POST" action="/artifacts/{{ artifact.id }}/delete">
+          <input type="submit" class="btn btn-danger" value="Delete" />
+        </form></div>{% endif %}
   </div>
 {% endfor %}
 </div>
