@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "dart-sass": "^1.25.0",
+    "sass": "^1.81.0"
+  }
+}

@@ -1,0 +1,17 @@
+// Import Bootstrap's SCSS core utilities (variables and functions first)
+@import "../vendor/bootstrap-5.3.3/scss/functions";  // Bootstrap functions
+@import "../vendor/bootstrap-5.3.3/scss/variables"; // Bootstrap variables
+
+// Override theme colors
+$custom-theme-colors: (
+  // "primary": #8e68a3,  // New primary color
+  // "primary-light": lighten(#8e68a3, 10%),
+  // "success": #6ca368, 
+  // "warning": #ebd34d,
+  // "secondary": #fff
+);
+
+$theme-colors: map-merge($theme-colors, $custom-theme-colors);
+
+// Now import the full Bootstrap framework, after customizations
+@import "../vendor/bootstrap-5.3.3/scss/bootstrap";

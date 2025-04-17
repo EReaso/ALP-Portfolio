@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container d-flex flex-row flex-wrap gap-3">
+{% for artifact in artifacts %}
+  <div class="card">
+    <div class="card-header flex-row flex-wrap gap-auto">
+      {{ artifact.title }}
+      {% for badge in artifact.badges|from_json %}
+        <span class="badge border fs-6"{{ badge }}></span>
+      {% endfor %}
+    </div>
+    <div class="card-body">{{ artifact.description }}</div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}
