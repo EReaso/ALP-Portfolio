@@ -1,0 +1,13 @@
+
+{% extends "base.html" %}
+{% block body %}
+<div class="container">
+  <h1 class="mt-3">Edit Artifact</h1>
+  <form method="POST">
+    <input type="text" class="form-control mb-3" name="title" placeholder="Artifact" value="{{ artifact.title }}"/>
+    <textarea name="description" cols="30" rows="10" class="form-control mb-3" placeholder="Description">{{ artifact.description }}</textarea>
+    <input type="text" class="form-control mb-3" placeholder="badge1,badge2,badge3" name="badges" value="{{ artifact.badges }}">
+    <input type="submit" class="btn btn-primary" value="Update artifact" />
+  </form>
+</div>
+{% endblock %}

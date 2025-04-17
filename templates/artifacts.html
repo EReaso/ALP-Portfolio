@@ -12,10 +12,12 @@
     </div>
     <div class="card-body">{{ artifact.description }}</div>
     {% if current_user.is_authenticated %}
-      <div class="card-footer">
+      <div class="card-footer d-flex gap-2">
+        <a href="/admin/artifacts/{{ artifact.id }}/edit" class="btn btn-primary">Edit</a>
         <form method="POST" action="/artifacts/{{ artifact.id }}/delete">
           <input type="submit" class="btn btn-danger" value="Delete" />
-        </form></div>{% endif %}
+        </form>
+      </div>{% endif %}
   </div>
 {% endfor %}
 </div>

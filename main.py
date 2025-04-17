@@ -52,6 +52,21 @@ def admin_artifacts():
         db.session.commit()
         return redirect("/artifacts/")
 
+@login_required
+@app.route("/admin/artifacts/<int:id>/edit", methods=["GET", "POST"])
+def edit_artifact(id):
+    if current_user.id != 1:
+        return redirect("/")
+    artifact = Artifact.query.get_or_404(id)
+    if request.method == "GET":
+        return render_template("edit_artifact.html", artifact=artifact)
+    else:
+        artifact.title = request.form.get("title")
+        artifact.description = request.form.get("description")
+        artifact.badges = request.form.get("badges")
+        db.session.commit()
+        return redirect("/artifacts/")
+
 @app.route("/logout/") 
 def logout():
     logout_user()
