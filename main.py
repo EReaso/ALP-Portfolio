@@ -1,4 +1,5 @@
 from flask import Flask, redirect, render_template, request
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import bcrypt
@@ -17,6 +18,7 @@ class Artifact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
+    date = db.Column(db.Date, nullable=False)
 
     @property
     def badges_list(self):
@@ -47,23 +49,9 @@ def admin_artifacts():
         title = request.form.get("title")
         description = request.form.get("description")
         badges = request.form.get("badges")
-        artifact = Artifact(title=title, description=description, badges=badges)
+        date = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
+        artifact = Artifact(title=title, description=description, badges=badges, date=date)
         db.session.add(artifact)
-        db.session.commit()
-        return redirect("/artifacts/")
-
-@login_required
-@app.route("/admin/artifacts/<int:id>/edit", methods=["GET", "POST"])
-def edit_artifact(id):
-    if current_user.id != 1:
-        return redirect("/")
-    artifact = Artifact.query.get_or_404(id)
-    if request.method == "GET":
-        return render_template("edit_artifact.html", artifact=artifact)
-    else:
-        artifact.title = request.form.get("title")
-        artifact.description = request.form.get("description")
-        artifact.badges = request.form.get("badges")
         db.session.commit()
         return redirect("/artifacts/")
 

@@ -1,24 +1,44 @@
+
 {% extends "base.html" %}
 
 {% block body %}
-<div class="container d-flex flex-row flex-wrap gap-3">
-{% for artifact in artifacts %}
-  <div class="card">
-    <div class="card-header flex-row flex-wrap gap-auto">
-      {{ artifact.title }}
-      {% for badge in artifact.badges_list %}
-        <span class="badge border fs-6"{{ badge }}></span>
+<div class="container">
+  <div class="row">
+    <div class="col-3">
+      <nav id="artifact-nav" class="sticky-top">
+        <ul class="nav flex-column nav-pills" style="position: sticky; top: 20px;">
+          {% for artifact in artifacts %}
+            <li class="nav-item">
+              <a class="nav-link" href="#artifact-{{ artifact.id }}">{{ artifact.date.strftime('%B %d, %Y') }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+    <div class="col-9" data-bs-spy="scroll" data-bs-target="#artifact-nav" data-bs-smooth-scroll="true">
+      {% for artifact in artifacts %}
+        <div class="card mb-4" id="artifact-{{ artifact.id }}">
+          <div class="card-header d-flex justify-content-between">
+            <div>
+              {{ artifact.title }}
+              {% for badge in artifact.badges_list %}
+                <span class="badge border fs-6">{{ badge }}</span>
+              {% endfor %}
+            </div>
+            <div class="text-muted">{{ artifact.date.strftime('%B %d, %Y') }}</div>
+          </div>
+          <div class="card-body">{{ artifact.description }}</div>
+          {% if current_user.is_authenticated %}
+            <div class="card-footer d-flex gap-2">
+              <a href="/admin/artifacts/{{ artifact.id }}/edit" class="btn btn-primary">Edit</a>
+              <form method="POST" action="/artifacts/{{ artifact.id }}/delete">
+                <input type="submit" class="btn btn-danger" value="Delete" />
+              </form>
+            </div>
+          {% endif %}
+        </div>
       {% endfor %}
     </div>
-    <div class="card-body">{{ artifact.description }}</div>
-    {% if current_user.is_authenticated %}
-      <div class="card-footer d-flex gap-2">
-        <a href="/admin/artifacts/{{ artifact.id }}/edit" class="btn btn-primary">Edit</a>
-        <form method="POST" action="/artifacts/{{ artifact.id }}/delete">
-          <input type="submit" class="btn btn-danger" value="Delete" />
-        </form>
-      </div>{% endif %}
   </div>
-{% endfor %}
 </div>
 {% endblock %}
