@@ -4,7 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import bcrypt
 
-
 app = Flask(__name__)
 app.config.from_object("config.Config")
 db = SQLAlchemy(app)
@@ -19,16 +18,20 @@ class Artifact(db.Model):
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
     date = db.Column(db.Date, nullable=False)
+    badges = db.Column(db.Text, nullable=False)
 
     @property
     def badges_list(self):
-        return self._badges.split(",")
-        
-    badges = db.Column(db.Text, nullable=False)
+        return self.badges.split(",")
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     password = db.Column(db.Text, nullable=False)
+
+    @classmethod
+    def create_user(cls):
+        db.session.add(cls(password=bcrypt.hashpw(input("password").encode("utf-8"), bcrypt.gensalt())))
+        db.session.commit()
 
 @app.route("/")
 def index():
@@ -39,9 +42,9 @@ def artifacts_get():
     return render_template("artifacts.html", artifacts=Artifact.query.all())
 
 @login_required
-@app.route("/admin/artifacts/", methods=["GET","POST"])
+@app.route("/admin/artifacts/", methods=["GET", "POST"])
 def admin_artifacts():
-    if current_user.id != 1:
+    if not current_user.is_authenticated:
         return redirect("/")
     if request.method == "GET":
         return render_template("admin_artifacts.html")
@@ -55,7 +58,30 @@ def admin_artifacts():
         db.session.commit()
         return redirect("/artifacts/")
 
-@app.route("/logout/") 
+@login_required
+@app.route("/artifacts/<int:id>/edit/", methods=["GET", "POST"])
+def edit_artifact(id):
+    if not current_user.is_authenticated:
+        return redirect("/")
+    artifact = Artifact.query.get_or_404(id)
+    if request.method == "GET":
+        return render_template("edit_artifact.html", artifact=artifact)
+    else:
+        artifact.title = request.form.get("title")
+        artifact.description = request.form.get("description")
+        artifact.badges = request.form.get("badges")
+        db.session.commit()
+        return redirect("/artifacts/")
+
+@login_required
+@app.route("/artifacts/<int:id>/delete/", methods=["POST"])
+def delete_artifact(id):
+    artifact = Artifact.query.get_or_404(id)
+    db.session.delete(artifact)
+    db.session.commit()
+    return redirect("/artifacts/")
+
+@app.route("/logout/")
 def logout():
     logout_user()
     return redirect("/")
@@ -72,7 +98,6 @@ def login():
             return render_template("login.html", error="Invalid username or password")
     else:
         return render_template("login.html")
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
