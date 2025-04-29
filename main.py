@@ -32,6 +32,7 @@ class User(db.Model, UserMixin):
     def create_user(cls):
         db.session.add(cls(password=bcrypt.hashpw(input("password").encode("utf-8"), bcrypt.gensalt())))
         db.session.commit()
+ 
 
 @app.route("/")
 def index():

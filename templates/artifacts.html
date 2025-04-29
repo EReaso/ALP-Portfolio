@@ -4,10 +4,10 @@
     <div class="col-3">
       <nav id="artifact-nav" class="sticky-top">
         <ul class="nav flex-column nav-pills position-sticky">
-          {% for artifact in artifacts %}
+          {% for month in months %}
           <li class="nav-item">
-            <a class="nav-link" href="#artifact-{{ artifact.id }}"
-              >{{ artifact.date.strftime('%B %d, %Y') }}</a
+            <a class="nav-link" href="#month-{{ months.index(month) }}"
+              >{{ month.__str__() }}</a
             >
           </li>
           {% endfor %}
