@@ -53,15 +53,22 @@ class Month:
 def artifacts_get():
     artifacts = Artifact.query.order_by(Artifact.date.desc()).all()
     months = []
-    current_month = None
+    month_dates = set()
     
     for artifact in artifacts:
         month_date = artifact.date.replace(day=1)
-        if not current_month or current_month.date != month_date:
+        if month_date not in month_dates:
+            month_dates.add(month_date)
             current_month = Month(month_date)
             months.append(current_month)
-        current_month.add_artifact(artifact)
-        
+            current_month.add_artifact(artifact)
+        else:
+            # Find existing month and add artifact
+            for month in months:
+                if month.date == month_date:
+                    month.add_artifact(artifact)
+                    break
+                    
     return render_template("artifacts.html", months=months)
 
 @login_required
