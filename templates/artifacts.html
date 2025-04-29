@@ -1,3 +1,4 @@
+
 {% extends "base.html" %} {% block body %}
 <div class="container">
   <div class="row">
@@ -6,46 +7,40 @@
         <ul class="nav flex-column nav-pills position-sticky">
           {% for month in months %}
           <li class="nav-item">
-            <a class="nav-link" href="#month-{{ months.index(month) }}"
-              >{{ month.__str__() }}</a
-            >
+            <a class="nav-link" href="#month-{{ months.index(month) }}">{{ month.__str__() }}</a>
           </li>
           {% endfor %}
         </ul>
       </nav>
     </div>
-    <div
-      class="col-9"
-      data-bs-spy="scroll"
-      data-bs-target="#artifact-nav"
-      data-bs-smooth-scroll="true"
-    >
-      {% for artifact in artifacts %}
-      <div class="card mb-4" id="artifact-{{ artifact.id }}">
-        <div class="card-header d-flex justify-content-between">
-          <div class="fs-3">{{ artifact.title }}</div>
-          <div>
-            {% for badge in artifact.badges_list %}
-            <span class="badge border fs-6 bg-primary">{{ badge }}</span>
-            {% endfor %}
+    <div class="col-9" data-bs-spy="scroll" data-bs-target="#artifact-nav" data-bs-smooth-scroll="true">
+      {% for month in months %}
+      <div class="mb-5" id="month-{{ months.index(month) }}">
+        <h2 class="mb-4">{{ month.__str__() }}</h2>
+        {% for artifact in month.artifacts %}
+        <div class="card mb-4" id="artifact-{{ artifact.id }}">
+          <div class="card-header d-flex justify-content-between">
+            <div class="fs-3">{{ artifact.title }}</div>
+            <div>
+              {% for badge in artifact.badges_list %}
+              <span class="badge border fs-6 bg-primary">{{ badge }}</span>
+              {% endfor %}
+            </div>
+            <div class="text-muted">
+              {{ artifact.date.strftime('%B %d, %Y') }}
+            </div>
           </div>
-          <div class="text-muted">
-            {{ artifact.date.strftime('%B %d, %Y') }}
+          <div class="card-body">{{ artifact.description }}</div>
+          {% if current_user.is_authenticated %}
+          <div class="card-footer d-flex gap-2">
+            <a href="/artifacts/{{ artifact.id }}/edit/" class="btn btn-primary">Edit</a>
+            <form method="POST" action="/artifacts/{{ artifact.id }}/delete/">
+              <input type="submit" class="btn btn-danger" value="Delete" />
+            </form>
           </div>
+          {% endif %}
         </div>
-        <div class="card-body">{{ artifact.description }}</div>
-        {% if current_user.is_authenticated %}
-        <div class="card-footer d-flex gap-2">
-          <a
-            href="/admin/artifacts/{{ artifact.id }}/edit"
-            class="btn btn-primary"
-            >Edit</a
-          >
-          <form method="POST" action="/artifacts/{{ artifact.id }}/delete">
-            <input type="submit" class="btn btn-danger" value="Delete" />
-          </form>
-        </div>
-        {% endif %}
+        {% endfor %}
       </div>
       {% endfor %}
     </div>

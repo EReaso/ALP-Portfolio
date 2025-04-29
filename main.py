@@ -38,9 +38,31 @@ class User(db.Model, UserMixin):
 def index():
     return render_template("index.html")
 
+class Month:
+    def __init__(self, date):
+        self.date = date
+        self.artifacts = []
+        
+    def __str__(self):
+        return self.date.strftime('%B %Y')
+    
+    def add_artifact(self, artifact):
+        self.artifacts.append(artifact)
+
 @app.route("/artifacts/", methods=["GET"])
 def artifacts_get():
-    return render_template("artifacts.html", artifacts=Artifact.query.all())
+    artifacts = Artifact.query.order_by(Artifact.date.desc()).all()
+    months = []
+    current_month = None
+    
+    for artifact in artifacts:
+        month_date = artifact.date.replace(day=1)
+        if not current_month or current_month.date != month_date:
+            current_month = Month(month_date)
+            months.append(current_month)
+        current_month.add_artifact(artifact)
+        
+    return render_template("artifacts.html", months=months)
 
 @login_required
 @app.route("/admin/artifacts/", methods=["GET", "POST"])
