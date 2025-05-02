@@ -41,16 +41,16 @@ class Artifact(db.Model):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
     @classmethod
-    def create_admin(cls, username, password):
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        admin = cls(username=username, password=hashed, is_admin=True)
-        db.session.add(admin)
-        db.session.commit()
+    def create_admin(cls, password):
+        with app.app_context():
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            admin = cls(password=hashed, is_admin=True)
+            db.session.add(admin)
+            db.session.commit()
 
 class Month:
     def __init__(self, date):
@@ -172,18 +172,16 @@ def logout():
 def login():
     if request.method == "POST":
         try:
-            username = request.form.get("username")
             password = request.form.get("password", "").encode("utf-8")
-            
-            user = User.query.filter_by(username=username).first()
+            user = User.query.first()  # Get the only user (admin)
             if user and bcrypt.checkpw(password, user.password):
                 login_user(user)
                 flash('Logged in successfully', 'success')
                 return redirect("/admin/artifacts/")
-            flash('Invalid username or password', 'error')
+            flash('Invalid password', 'error')
         except Exception as e:
             flash('Login error occurred', 'error')
-        return render_template("login.html", error="Invalid username or password")
+        return render_template("login.html", error="Invalid password")
     return render_template("login.html")
 
 @app.errorhandler(404)

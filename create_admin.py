@@ -1,14 +1,19 @@
 
-from main import db, User
-import sys
+from main import app, db, User
 
 def create_admin():
-    username = input("Enter admin username: ")
     password = input("Enter admin password: ")
     
     try:
-        User.create_admin(username, password)
-        print("Admin user created successfully!")
+        # Create all tables
+        with app.app_context():
+            db.create_all()
+            # Check if admin already exists
+            if User.query.first() is None:
+                User.create_admin(password)
+                print("Admin user created successfully!")
+            else:
+                print("Admin user already exists!")
     except Exception as e:
         print(f"Error creating admin user: {e}")
 
