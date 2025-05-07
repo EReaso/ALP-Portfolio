@@ -1,3 +1,4 @@
+
 {% extends "base.html" %} {% block body %}
 <div class="container">
   <div class="row">
@@ -12,7 +13,7 @@
         </ul>
       </nav>
     </div>
-    <div class="col-9" data-bs-spy="scroll" data-bs-target="#artifact-nav" data-bs-smooth-scroll="true">
+    <div class="col-9" data-bs-spy="scroll" data-bs-target="#artifact-nav" data-bs-smooth-scroll="true" data-bs-root-margin="0px 0px -40%" style="position: relative; height: 90vh; overflow-y: auto;">
       {% for month in months %}
       <div class="mb-5" id="month-{{ months.index(month) }}">
         <h2 class="mb-4">{{ month.__str__() }}</h2>
