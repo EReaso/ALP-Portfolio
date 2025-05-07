@@ -1,4 +1,3 @@
-
 from flask import Flask, redirect, render_template, request, flash
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
@@ -13,9 +12,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class Artifact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +38,7 @@ class Artifact(db.Model):
             'badges': self.badges_list
         }
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     password = db.Column(db.Text, nullable=False)
@@ -50,32 +52,34 @@ class User(db.Model, UserMixin):
             db.session.add(admin)
             db.session.commit()
 
+
 class Month:
     def __init__(self, date):
         self.date = date
         self.artifacts = []
-        
+
     def __str__(self):
         return self.date.strftime('%B %Y')
-    
+
     def add_artifact(self, artifact):
         self.artifacts.append(artifact)
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/artifacts/", methods=["GET"])
 def artifacts_get():
     try:
         artifacts = Artifact.query.order_by(Artifact.date.desc()).all()
         months = []
-        month_dates = set()
-        
+
         for artifact in artifacts:
             month_date = artifact.date.replace(day=1)
-            if month_date not in month_dates:
-                month_dates.add(month_date)
+            if month_date not in (month.date for month in months):
+                months.append(month_date)
                 current_month = Month(month_date)
                 months.append(current_month)
                 current_month.add_artifact(artifact)
@@ -89,28 +93,32 @@ def artifacts_get():
         flash('Database error occurred', 'error')
         return redirect('/')
 
+
 @app.route("/admin/artifacts/", methods=["GET", "POST"])
 @login_required
 def admin_artifacts():
     if not current_user.is_admin:
         flash('Unauthorized access', 'error')
         return redirect("/")
-    
+
     if request.method == "GET":
         return render_template("admin_artifacts.html")
-    
+
     try:
         title = escape(request.form.get("title"))
         description = escape(request.form.get("description"))
         badges = escape(request.form.get("badges"))
         date_str = request.form.get("date")
-        
+
         if not all([title, description, badges, date_str]):
             flash('All fields are required', 'error')
             return redirect(request.url)
-            
+
         date = datetime.strptime(date_str, "%Y-%m-%d").date()
-        artifact = Artifact(title=title, description=description, badges=badges, date=date)
+        artifact = Artifact(title=title,
+                            description=description,
+                            badges=badges,
+                            date=date)
         db.session.add(artifact)
         db.session.commit()
         flash('Artifact created successfully', 'success')
@@ -120,19 +128,20 @@ def admin_artifacts():
         flash('Error creating artifact', 'error')
         return redirect(request.url)
 
+
 @app.route("/artifacts/<int:id>/edit/", methods=["GET", "POST"])
 @login_required
 def edit_artifact(id):
     if not current_user.is_admin:
         flash('Unauthorized access', 'error')
         return redirect("/")
-        
+
     try:
         artifact = Artifact.query.get_or_404(id)
-        
+
         if request.method == "GET":
             return render_template("edit_artifact.html", artifact=artifact)
-            
+
         artifact.title = escape(request.form.get("title"))
         artifact.description = escape(request.form.get("description"))
         artifact.badges = escape(request.form.get("badges"))
@@ -144,13 +153,14 @@ def edit_artifact(id):
         flash('Error updating artifact', 'error')
         return redirect(request.url)
 
+
 @app.route("/artifacts/<int:id>/delete/", methods=["POST"])
 @login_required
 def delete_artifact(id):
     if not current_user.is_admin:
         flash('Unauthorized access', 'error')
         return redirect("/")
-        
+
     try:
         artifact = Artifact.query.get_or_404(id)
         db.session.delete(artifact)
@@ -161,10 +171,12 @@ def delete_artifact(id):
         flash('Error deleting artifact', 'error')
     return redirect("/artifacts/")
 
+
 @app.route("/logout/")
 def logout():
     logout_user()
     return redirect("/")
+
 
 @app.route("/login/", methods=["GET", "POST"])
 def login():
@@ -182,14 +194,17 @@ def login():
         return render_template("login.html", error="Invalid password")
     return render_template("login.html")
 
+
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
+
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+
 
 if __name__ == '__main__':
     with app.app_context():
