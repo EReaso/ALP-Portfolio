@@ -1,19 +1,29 @@
-
 {% extends "base.html" %} {% block body %}
 <div class="container">
   <div class="row">
     <div class="col-3">
+      {% if current_user.is_authenticated %}
+      <a href="/login/"
+        ><button class="btn btn-primary w-100">Add Artifact</button></a
+      >{% endif %}
       <nav id="artifact-nav" class="sticky-top">
         <ul class="nav flex-column nav-pills position-sticky">
           {% for month in months %}
           <li class="nav-item">
-            <a class="nav-link" href="#month-{{ months.index(month) }}">{{ month.__str__() }}</a>
+            <a class="nav-link" href="#month-{{ months.index(month) }}"
+              >{{ month.__str__() }}</a
+            >
           </li>
           {% endfor %}
         </ul>
       </nav>
     </div>
-    <div class="col-9" data-bs-spy="scroll" data-bs-target="#artifact-nav" data-bs-smooth-scroll="true" data-bs-root-margin="0px 0px -40%" style="position: relative; height: 90vh; overflow-y: auto;">
+    <div
+      class="col-9"
+      data-bs-spy="scroll"
+      data-bs-target="#artifact-nav"
+      data-bs-smooth-scroll="true"
+    >
       {% for month in months %}
       <div class="mb-5" id="month-{{ months.index(month) }}">
         <h2 class="mb-4">{{ month.__str__() }}</h2>
@@ -33,7 +43,9 @@
           <div class="card-body">{{ artifact.description }}</div>
           {% if current_user.is_authenticated %}
           <div class="card-footer d-flex gap-2">
-            <a href="/artifacts/{{ artifact.id }}/edit/" class="btn btn-primary">Edit</a>
+            <a href="/artifacts/{{ artifact.id }}/edit/" class="btn btn-primary"
+              >Edit</a
+            >
             <form method="POST" action="/artifacts/{{ artifact.id }}/delete/">
               <input type="submit" class="btn btn-danger" value="Delete" />
             </form>
