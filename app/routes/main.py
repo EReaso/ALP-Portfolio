@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app
 from app.extensions import db, login_manager
 from app.models.user import User
+from app.models.month import Month
 
 
 bp = Blueprint("main", __name__)
@@ -16,6 +17,8 @@ def index():
 
 @bp.route("/artifacts/", methods=["GET"])
 def artifacts_get():
+    if current_app.months is None:
+        current_app.months = Month.init()
     return render_template("artifacts.html", months=current_app.months)
 
 @bp.errorhandler(404)

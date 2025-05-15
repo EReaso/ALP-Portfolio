@@ -9,7 +9,7 @@ from app.models.month import Month
 class App(Flask):
     def __init__(self, import_name):
         super().__init__(import_name)
-        self.months = []
+        self.months = None
 
 
 app = App(__name__)
@@ -24,8 +24,6 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(main_bp)
 
-with app.app_context():
-    app.months = Month.init()
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
